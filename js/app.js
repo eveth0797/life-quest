@@ -148,6 +148,7 @@
     $$(".tab-panel").forEach(p => p.classList.toggle("active", p.id === "tab-" + name));
     try { localStorage.setItem(KEY + ".tab", name); } catch {}
     renderCharts(); if (name === "ai") renderCtx();
+    (window.LQ && window.LQ.onTab || []).forEach(f => f(name));
     scrollTo({ top: 0, behavior: "smooth" });
   }
   $("#tabs").addEventListener("click", e => { const b = e.target.closest("button[data-tab]"); if (b) { sfx("click"); showTab(b.dataset.tab); } });
@@ -242,29 +243,6 @@
     }).join("") : `<li class="small">Aún no hay registros. Pulsa ⚡ para empezar tu aventura.</li>`;
   }
   $("#recentLog").addEventListener("click", e => { const b = e.target.closest("[data-del]"); if (b && confirm("¿Borrar este registro?")) removeLog(b.dataset.del); });
-
-  /* ---------------- POMODORO ---------------- */
-  let pomoLen = 25 * 60, pomoLeft = pomoLen, pomoTimer = null;
-  const fmt = s => `${pad(Math.floor(s / 60))}:${pad(s % 60)}`;
-  $("#pomoSkill").innerHTML = D.skills.map(s => `<option value="${s.id}">${s.icon} ${s.name}</option>`).join("");
-  $("#pomoSkill").value = "emt";
-  function pomoTick() {
-    pomoLeft--; $("#pomoTime").textContent = fmt(pomoLeft); document.title = `${fmt(pomoLeft)} · Life Quest`;
-    if (pomoLeft <= 0) {
-      clearInterval(pomoTimer); pomoTimer = null; $("#pomoStart").textContent = "▶ Start"; document.title = "Life Quest";
-      const min = Math.round(pomoLen / 60), sk = $("#pomoSkill").value;
-      addLog({ skill: sk, xp: min, minutes: min, note: `Pomodoro ${min} min`, type: "pomo" });
-      sfx("up"); toast("⏰ ¡Pomodoro completado!"); pomoLeft = pomoLen; $("#pomoTime").textContent = fmt(pomoLeft);
-      try { if (Notification?.permission === "granted") new Notification("Life Quest", { body: "¡Pomodoro completado! Tómate un descanso." }); } catch {}
-    }
-  }
-  $("#pomoStart").onclick = () => {
-    if (pomoTimer) { clearInterval(pomoTimer); pomoTimer = null; $("#pomoStart").textContent = "▶ Start"; }
-    else { try { Notification?.permission === "default" && Notification.requestPermission(); } catch {} pomoTimer = setInterval(pomoTick, 1000); $("#pomoStart").textContent = "⏸ Pausa"; }
-    sfx("click");
-  };
-  $("#pomoReset").onclick = () => { clearInterval(pomoTimer); pomoTimer = null; pomoLeft = pomoLen; $("#pomoTime").textContent = fmt(pomoLeft); $("#pomoStart").textContent = "▶ Start"; document.title = "Life Quest"; };
-  $$("[data-pomo]").forEach(b => b.onclick = () => { pomoLen = +b.dataset.pomo * 60; $("#pomoReset").click(); });
 
   /* ---------------- QUICK LOG ---------------- */
   $("#quickGrid").innerHTML = D.quickActions.map((a, i) => `<button type="button" data-qa="${i}"><span class="e">${a.icon}</span>${esc(a.label)}<small>+${a.xp} XP</small></button>`).join("");
@@ -655,7 +633,11 @@ Misiones pendientes hoy: ${pendingQ || "ninguna 🎉"}`;
     checkAchievements();
     renderHUD(); renderHome(); renderGym(); renderFrench(); renderEMT(); renderFood(); renderJournal(); renderStats(); renderTrophies(); renderSettings();
     renderCharts();
+    (window.LQ && window.LQ.hooks || []).forEach(f => { try { f(); } catch (e) { console.error(e); } });
   }
+
+  /* ---------------- API para módulos (agenda.js, focus.js) ---------------- */
+  window.LQ = { state: () => S, save, addLog, removeLog, toast, skillById, today, dkey, addDays, uid, esc, D, showTab: n => showTab(n), hooks: [], onTab: [] };
 
   /* ---------------- INIT ---------------- */
   applyTheme(); sizeStars(); addEventListener("resize", sizeStars); drawStars();

@@ -45,6 +45,8 @@
   <!-- ===== NAV ===== -->
   <nav class="tabs" id="tabs">
     <button data-tab="home" class="active">🏠 <span>Inicio</span></button>
+    <button data-tab="agenda">📅 <span>Agenda</span></button>
+    <button data-tab="focus">⏳ <span>Focus</span></button>
     <button data-tab="gym">💪 <span>Gym</span></button>
     <button data-tab="french">🥐 <span>Français</span></button>
     <button data-tab="emt">⚡ <span>EMT & RL</span></button>
@@ -102,19 +104,9 @@
           <div class="legend small">Menos <i class="l0"></i><i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l4"></i> Más</div>
         </div>
         <div class="card">
-          <h2>⏱️ Pomodoro</h2>
-          <div class="pomo">
-            <div class="pomo-time" id="pomoTime">25:00</div>
-            <select id="pomoSkill" aria-label="Habilidad del pomodoro"></select>
-            <div class="row center">
-              <button class="btn" id="pomoStart">▶ Start</button>
-              <button class="btn ghost" id="pomoReset">↺</button>
-              <button class="btn ghost" data-pomo="25">25</button>
-              <button class="btn ghost" data-pomo="50">50</button>
-              <button class="btn ghost" data-pomo="5">5</button>
-            </div>
-            <p class="small">Al terminar se registra automáticamente el tiempo y el XP.</p>
-          </div>
+          <h2>⏳ Focus &amp; Agenda de hoy</h2>
+          <div class="focus-mini-wrap"><canvas id="focusMini"></canvas><button class="btn" id="focusMiniOpen"><span id="focusMiniTime">Focus</span> ▶</button></div>
+          <div id="homeAgenda"></div>
         </div>
       </div>
 
@@ -127,6 +119,57 @@
       <div class="card">
         <h2>📜 Registro reciente</h2>
         <ul class="log" id="recentLog"></ul>
+      </div>
+    </section>
+
+    <!-- ========== AGENDA ========== -->
+    <section class="tab-panel" id="tab-agenda">
+      <div class="grid g-2">
+        <div class="card">
+          <div class="row ag-nav"><button class="btn ghost" id="agPrev">◀</button><h2 id="agDate" style="margin:0;flex:1;text-align:center">Hoy</h2><button class="btn ghost" id="agNext">▶</button><button class="btn" id="agToday">Hoy</button></div>
+          <p class="small" id="agSummary"></p>
+          <div class="timeline" id="timeline"></div>
+          <details open><summary>➕ Añadir bloque</summary>
+            <div class="row"><input id="blkTitle" placeholder="¿Qué harás? (ej. Simulación PSCAD)"></div>
+            <div class="row"><input type="time" id="blkStart" value="09:00"><input type="time" id="blkEnd" value="10:00"><select id="blkSkill"></select></div>
+            <div class="row"><button class="btn ok" id="blkAdd">+ Bloque</button><button class="btn ghost" id="blkTemplate">✨ Plantilla de día ideal</button></div>
+          </details>
+        </div>
+        <div class="card">
+          <h2>✅ Tareas</h2>
+          <div class="row"><input id="taskText" placeholder="Nueva tarea… (Enter)"></div>
+          <div class="row"><select id="taskPrio"><option value="alta">🔴 Alta</option><option value="media" selected>🟡 Media</option><option value="baja">🟢 Baja</option></select><input type="date" id="taskDue"><select id="taskSkill"></select><button class="btn ok" id="taskAdd">+</button></div>
+          <div class="row"><select id="taskFilter"><option value="pending">Pendientes</option><option value="today">Para hoy / atrasadas</option><option value="done">Completadas</option><option value="all">Todas</option></select><span class="small" id="taskSummary"></span></div>
+          <ul class="tasks" id="taskList"></ul>
+        </div>
+      </div>
+      <div class="grid g-2">
+        <div class="card"><h2>📆 Hábitos de la semana</h2><div id="habitGrid" class="habit-wrap"></div></div>
+        <div class="card"><h2>🎯 Metas semanales por área (min)</h2><div id="weekGoals"></div></div>
+      </div>
+    </section>
+
+    <!-- ========== FOCUS ========== -->
+    <section class="tab-panel" id="tab-focus">
+      <div class="card focus-card">
+        <div class="focus-stage" id="focusStage">
+          <canvas id="focusCanvas"></canvas>
+          <div class="focus-hud"><div class="focus-time" id="focusTime">25:00</div><div class="small" id="focusSceneName"></div></div>
+        </div>
+        <div class="row center">
+          <button class="btn" data-scene="forest">🌲 Bosque</button><button class="btn" data-scene="cosmos">🪐 Cosmos</button><button class="btn" data-scene="quantum">⚛️ Cuántica</button>
+        </div>
+        <div class="row center">
+          <button class="btn ghost" data-fdur="15">15</button><button class="btn ghost" data-fdur="25">25</button><button class="btn ghost" data-fdur="50">50</button><button class="btn ghost" data-fdur="90">90</button>
+          <input type="number" id="focusCustom" placeholder="min" style="max-width:80px">
+          <select id="focusSkill" style="max-width:220px"></select>
+        </div>
+        <div class="row center">
+          <button class="btn big ok" id="focusStart" style="max-width:260px">▶ Iniciar</button>
+          <button class="btn ghost" id="focusReset">↺ Nueva escena</button>
+          <button class="btn ghost" id="focusFull">⛶</button>
+        </div>
+        <p class="small center"><span id="focusPct">0%</span> · <span id="focusStats"></span> · El temporizador sigue aunque cambies de pestaña o recargues.</p>
       </div>
     </section>
 
@@ -444,5 +487,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <script src="js/data.js"></script>
   <script src="js/app.js"></script>
+  <script src="js/agenda.js"></script>
+  <script src="js/focus.js"></script>
 </body>
 </html>
