@@ -4,6 +4,10 @@
 
 **Life Quest** es una web app de una sola página (HTML + CSS + JS puro) para organizar tus días y llevar el registro de tu progreso en varias áreas de tu vida, con estética **anime / videojuego vintage** y **7 temas** intercambiables.
 
+| | |
+|---|---|
+| ![Arcade](docs/home.png) | ![Sakura](docs/sakura.png) |
+
 ## 🎮 Funciones
 
 | Área | Qué puedes hacer |
@@ -12,6 +16,8 @@
 | ⚡ **Registro rápido** | Botón flotante ⚡ (o tecla **Q**): un clic y queda registrado (gym, cardio, francés, EMT, lectura, agua, meditación...) |
 | 💪 **Gym** | Rutinas Push / Pull / Legs / Full body / Core, series × reps × kg, **detección de PRs**, 1RM estimado, gráfica de progreso por ejercicio, peso corporal |
 | 🥐 **Français** | Flashcards A1-A2 con **repetición espaciada** (vocabulario de ingeniería, gym y comida), pronunciación con voz 🔊, *phrase du jour*, minutos de estudio, ruta A1 → B1, recursos |
+| 🤖 **Investigación RL** | Ruta del paper de Maskable PPO (respuesta a revisores, camera-ready), siguientes pasos de investigación, herramientas y carrera académica |
+| 🕹️ **RIFTVOLT** | Tarjeta con tus estadísticas del juego. Completar tus misiones da bonus en el juego |
 | ⚡ **EMT** | *Skill tree* de transitorios electromagnéticos para **data centers** (inrush, ferroresonancia, IBR / grid-forming, IEEE 2800 / 519, PSCAD...), bitácora técnica, horas acumuladas, biblioteca |
 | 🍱 **Comida** | Registro de comidas con proteína / kcal / calidad, metas diarias, gráfica de proteína de 14 días, ideas altas en proteína |
 | 📓 **Diario** | Ánimo, sueño, energía, gratitud, reflexión y prioridad de mañana |
