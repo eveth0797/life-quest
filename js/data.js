@@ -7,6 +7,8 @@ window.LQ_DATA = {
     { id: "cardio",   name: "Cardio / Movilidad",   icon: "🏃", color: "#ff9f1c" },
     { id: "french",   name: "Français",             icon: "🥐", color: "#4cc9f0" },
     { id: "emt",      name: "EMT / Power Systems",  icon: "⚡", color: "#ffd60a" },
+    { id: "research", name: "Investigación / RL",   icon: "🤖", color: "#00b4ff" },
+    { id: "english",  name: "English",              icon: "🍁", color: "#e63946" },
     { id: "learn",    name: "Aprendizaje",          icon: "📚", color: "#9b5de5" },
     { id: "food",     name: "Alimentación",         icon: "🍱", color: "#06d6a0" },
     { id: "mind",     name: "Mente / Sueño",        icon: "🧘", color: "#f15bb5" }
@@ -18,6 +20,7 @@ window.LQ_DATA = {
     { id: "q2", text: "15 min de francés",                skill: "french", xp: 20 },
     { id: "q3", text: "Repasar 10 flashcards FR",         skill: "french", xp: 10 },
     { id: "q4", text: "30 min de estudio EMT / técnico",  skill: "emt",    xp: 25 },
+    { id: "q9", text: "1 bloque de deep work de investigación (paper / código RL)", skill: "research", xp: 30 },
     { id: "q5", text: "Proteína en cada comida",          skill: "food",   xp: 15 },
     { id: "q6", text: "2+ litros de agua",                skill: "food",   xp: 10 },
     { id: "q7", text: "Leer 10 páginas",                  skill: "learn",  xp: 15 },
@@ -33,6 +36,10 @@ window.LQ_DATA = {
     { label: "Francés 30 min",   skill: "french", xp: 30, minutes: 30, icon: "📖" },
     { label: "EMT 30 min",       skill: "emt",    xp: 25, minutes: 30, icon: "⚡" },
     { label: "EMT 1 h (deep)",   skill: "emt",    xp: 50, minutes: 60, icon: "🔬" },
+    { label: "Research 1 h",     skill: "research", xp: 50, minutes: 60, icon: "🤖" },
+    { label: "Escribir paper 30m",skill: "research", xp: 30, minutes: 30, icon: "📝" },
+    { label: "Entrenar agente RL",skill: "research", xp: 25, minutes: 30, icon: "🧠" },
+    { label: "English 15 min",   skill: "english", xp: 15, minutes: 15, icon: "🍁" },
     { label: "Leer 20 min",      skill: "learn",  xp: 15, minutes: 20, icon: "📚" },
     { label: "Curso / video",    skill: "learn",  xp: 20, minutes: 30, icon: "🎓" },
     { label: "Comida sana",      skill: "food",   xp: 10, minutes: 0,  icon: "🥗" },
@@ -88,6 +95,39 @@ window.LQ_DATA = {
       "Estudios de calidad de energía para hyperscalers",
       "Publicar 1 artículo / post técnico (LinkedIn, IEEE PES)",
       "Certificación PE / P.Eng (si aplica)"
+    ]}
+  ],
+
+  /* Ruta de investigación: RL para sistemas de potencia */
+  researchRoadmap: [
+    { group: "Paper actual · Maskable PPO (IEEE 123-bus)", items: [
+      "Responder a revisores (Response to Reviewers) completo",
+      "Tablas de recompensa e hiperparámetros finales",
+      "Sección 5.3: benchmark de switching con el mismo modelo de flujo de carga",
+      "Alt-text de figuras y verificación de formato (≤15 páginas)",
+      "Camera-ready enviado 🎉",
+      "Preparar presentación / póster del paper"
+    ]},
+    { group: "Siguiente nivel en RL", items: [
+      "Seeds múltiples + intervalos de confianza en todas las curvas",
+      "Comparar con un baseline de optimización (MILP / heurística)",
+      "Restauración multi-paso con incertidumbre de carga y PV",
+      "Seguridad: restricciones duras vs action masking vs Lagrangian PPO",
+      "Generalización a otro feeder (IEEE 8500 / topologías aleatorias)",
+      "Multi-agente: coordinación de varios almacenamientos grid-forming",
+      "Puente RMS→EMT: validar las acciones del agente en PSCAD"
+    ]},
+    { group: "Herramientas", items: [
+      "Stable-Baselines3 / sb3-contrib (MaskablePPO) dominado",
+      "OpenDSS + py_dss_toolkit para entornos Gymnasium",
+      "Seguimiento de experimentos (W&B / TensorBoard) ordenado",
+      "Repos reproducibles: requirements, seeds, README, scripts de figuras"
+    ]},
+    { group: "Carrera académica", items: [
+      "Publicar 1 artículo de revista (IEEE Trans. / Applied Energy)",
+      "Presentar en una conferencia (IEEE PES GM / ISGT)",
+      "Actualizar CV y página personal (eveth-gonzalez.github.io)",
+      "Escribir un post técnico explicando el paper en lenguaje simple"
     ]}
   ],
 
@@ -172,7 +212,13 @@ window.LQ_DATA = {
     "💤 Noche sin pantallas: lee en papel 30 min",
     "🤝 Busca un intercambio de idiomas (Tandem / HelloTalk) y agenda una llamada",
     "🏆 Bate un PR en un ejercicio básico (con buena técnica)",
-    "🧩 Resume en una página una norma (IEEE 519 / IEEE 2800)"
+    "🧩 Resume en una página una norma (IEEE 519 / IEEE 2800)",
+    "🤖 Entrena una variante de tu agente con otra semilla y compara curvas",
+    "📊 Rehaz una figura del paper para que se entienda en 5 segundos",
+    "🍁 Explora un parque del River Valley de Edmonton caminando 45 min",
+    "⛸️ Prueba patinar en hielo (temporada de invierno en Edmonton)",
+    "🎤 Practica 3 min explicando tu paper en inglés y luego en francés",
+    "🕹️ Juega una run de RIFTVOLT y mira qué aprendió NEXUS de ti"
   ],
 
   quotes: [
@@ -200,6 +246,8 @@ window.LQ_DATA = {
     { id: "frh10",   icon: "🗼", name: "Parisien",         desc: "10 horas de francés",            test: s => s.minutes.french >= 600 },
     { id: "emt10",   icon: "⚡", name: "Transient Hunter",  desc: "10 horas de estudio EMT",        test: s => s.minutes.emt >= 600 },
     { id: "emtroad", icon: "🔬", name: "Wave Master",      desc: "10 temas de la ruta EMT",        test: s => s.emtDone >= 10 },
+    { id: "res20",   icon: "🤖", name: "Agente entrenado",  desc: "20 horas de investigación",      test: s => (s.minutes.research || 0) >= 1200 },
+    { id: "resroad", icon: "📄", name: "Camera-ready",      desc: "5 hitos de investigación",       test: s => (s.resDone || 0) >= 5 },
     { id: "water",   icon: "💧", name: "Hidratado",        desc: "2 L de agua en un día",          test: s => s.waterToday >= 2000 },
     { id: "allq",    icon: "🎯", name: "Completista",      desc: "Todas las misiones de un día",   test: s => s.perfectDays >= 1 },
     { id: "journal", icon: "📓", name: "Diario",           desc: "7 entradas de diario",           test: s => s.journals >= 7 }
@@ -211,6 +259,8 @@ window.LQ_DATA = {
     { label: "🏋️ Ajusta mi rutina", text: "Según mis entrenamientos registrados, propón mi rutina de gym para la próxima semana (progresión de cargas incluida)." },
     { label: "🥐 Clase de francés", text: "Soy nivel A1-A2. Dame una mini clase de 15 minutos con vocabulario de mi día a día (ingeniería eléctrica, gym, comida) y 5 ejercicios." },
     { label: "⚡ Plan de estudio EMT", text: "Soy ingeniero/a de sistemas de potencia haciendo estudios EMT para data centers. Según mis temas completados, ¿qué debería estudiar esta semana? Incluye referencias." },
+    { label: "🤖 Mi investigación", text: "Investigo RL (Maskable PPO) para restauración de cargas críticas en redes de distribución con almacenamiento grid-forming (IEEE 123-bus). Según mis hitos completados, ¿cuáles son los 3 siguientes pasos de mayor impacto para publicar en revista? Sé específico." },
+    { label: "🍁 English pro", text: "Ayúdame a practicar inglés académico: dame 5 frases útiles para presentar mi investigación en una conferencia y corrígeme si te respondo." },
     { label: "🍱 Plan de comidas", text: "Diseña un plan de comidas de 3 días alto en proteína, sencillo de preparar, según lo que he registrado." },
     { label: "🧭 Plan de mañana", text: "Con base en mis misiones y lo que he hecho, arma un horario realista para mañana con bloques de tiempo." }
   ]

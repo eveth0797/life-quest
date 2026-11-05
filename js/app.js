@@ -19,12 +19,12 @@
   /* ---------------- STATE ---------------- */
   const defaults = () => ({
     version: 1,
-    profile: { name: "Héroe", cls: "Power Systems Mage", avatar: "🧙", theme: "arcade", sound: true, fx: true,
+    profile: { name: "Eveth", cls: "Power Systems & RL Researcher", avatar: "🧙", theme: "arcade", sound: true, fx: true,
       goals: { prot: 140, kcal: 2400, water: 2500 } },
     quests: structuredClone(D.defaultQuests),
     questDone: {}, logs: [], water: {}, workouts: [], weights: [],
     cards: {}, customCards: [], cardsReviewed: 0,
-    emtDone: {}, frDone: {}, emtSessions: [], meals: [], journal: {},
+    emtDone: {}, frDone: {}, resDone: {}, emtSessions: [], meals: [], journal: {},
     rewards: [ { name: "Noche de anime 🍿", cost: 50 }, { name: "Comida libre 🍕", cost: 80 }, { name: "Videojuego 1h 🎮", cost: 40 } ],
     spent: 0, sideDone: 0, unlocked: {}
   });
@@ -32,6 +32,7 @@
   try { S = Object.assign(defaults(), JSON.parse(localStorage.getItem(KEY) || "{}")); } catch { S = defaults(); }
   S.profile = Object.assign(defaults().profile, S.profile);
   S.profile.goals = Object.assign(defaults().profile.goals, S.profile.goals);
+  S.resDone = S.resDone || {};
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { toast("⚠️ No se pudo guardar"); } };
 
   /* ---------------- XP / LEVELS ---------------- */
@@ -401,6 +402,8 @@
   /* ---------------- EMT ---------------- */
   function renderEMT() {
     renderRoad($("#emtRoad"), D.emtRoadmap, S.emtDone, "emt", 40);
+    renderRoad($("#resRoad"), D.researchRoadmap, S.resDone, "research", 40);
+    $("#resHours").textContent = (minutesBy("research") / 60).toFixed(1);
     const total = D.emtRoadmap.reduce((a, g) => a + g.items.length, 0), n = Object.keys(S.emtDone).length;
     const pct = Math.round(n / total * 100); $("#emtRing").style.setProperty("--p", pct); $("#emtPct").textContent = pct + "%";
     $("#emtHours").textContent = (minutesBy("emt") / 60).toFixed(1);
@@ -466,7 +469,7 @@ ${j.gratitude ? "🙏 " + esc(j.gratitude) + "\n" : ""}${esc(j.text)}${j.tomorro
     const t = today();
     const perfectDays = Object.entries(S.questDone).filter(([, a]) => a.length >= S.quests.length && S.quests.length).length;
     return { totalLogs: S.logs.length, level: levelFrom(totalXP()).lvl, streak: streak(), workouts: S.workouts.length, cardsReviewed: S.cardsReviewed,
-      minutes: Object.fromEntries(D.skills.map(s => [s.id, minutesBy(s.id)])), emtDone: Object.keys(S.emtDone).length,
+      minutes: Object.fromEntries(D.skills.map(s => [s.id, minutesBy(s.id)])), emtDone: Object.keys(S.emtDone).length, resDone: Object.keys(S.resDone).length,
       waterToday: S.water[t] || 0, perfectDays, journals: Object.keys(S.journal).length };
   }
   function renderStats() {
@@ -512,7 +515,7 @@ ${j.gratitude ? "🙏 " + esc(j.gratitude) + "\n" : ""}${esc(j.text)}${j.tomorro
     const jr = Object.keys(S.journal).sort().slice(-5).map(k => `- ${k}: ánimo ${S.journal[k].mood}/5, sueño ${S.journal[k].sleep}h, energía ${S.journal[k].energy}/5`).join("\n") || "- (sin entradas)";
     const pendingQ = S.quests.filter(q => !(S.questDone[today()] || []).includes(q.id)).map(q => q.text).join("; ");
     return `## Contexto de mi tracker "Life Quest" (${today()})
-Perfil: ${S.profile.name}, ingeniero/a de sistemas de potencia; consultoría de estudios EMT (transitorios electromagnéticos) para centros de datos. Francés nivel A1-A2. Entreno en gym (fuerza). Metas diarias: ${S.profile.goals.prot} g proteína, ${S.profile.goals.kcal} kcal, ${S.profile.goals.water} ml agua.
+Perfil: ${S.profile.name}, ingeniero/a de sistemas de potencia en Edmonton (University of Alberta). Consultoría de estudios EMT (transitorios electromagnéticos) para centros de datos. Investigación en aprendizaje por refuerzo (Maskable PPO) para restauración de cargas críticas con almacenamiento grid-forming (IEEE 123-bus). Francés nivel A1-A2. Entreno en gym (fuerza). Metas diarias: ${S.profile.goals.prot} g proteína, ${S.profile.goals.kcal} kcal, ${S.profile.goals.water} ml agua.
 Nivel global ${L.lvl}, XP total ${totalXP()}, racha ${st.streak} días.
 
 ### Últimos 7 días por área
@@ -529,6 +532,9 @@ ${meals}
 Temas dominados (${emtDone.length}): ${emtDone.join("; ") || "ninguno"}
 Sesiones recientes:
 ${emtSess}
+
+### Investigación (RL)
+Horas: ${(minutesBy("research") / 60).toFixed(1)}. Hitos completados: ${Object.keys(S.resDone).join("; ") || "ninguno"}
 
 ### Francés
 Minutos totales: ${st.minutes.french}. Flashcards repasadas: ${S.cardsReviewed}. Temas completados: ${frDone.join("; ") || "ninguno"}
