@@ -41,6 +41,7 @@ window.LQ_DATA = {
     { label: "Entrenar agente RL",skill: "research", xp: 25, minutes: 30, icon: "🧠" },
     { label: "English 15 min",   skill: "english", xp: 15, minutes: 15, icon: "🍁" },
     { label: "Leer 20 min",      skill: "learn",  xp: 15, minutes: 20, icon: "📚" },
+    { label: "PyQuest nivel",    skill: "learn",  xp: 25, minutes: 30, icon: "🐍" },
     { label: "Curso / video",    skill: "learn",  xp: 20, minutes: 30, icon: "🎓" },
     { label: "Comida sana",      skill: "food",   xp: 10, minutes: 0,  icon: "🥗" },
     { label: "Vaso de agua",     skill: "food",   xp: 2,  minutes: 0,  icon: "💧", water: 250 },
@@ -218,7 +219,9 @@ window.LQ_DATA = {
     "🍁 Explora un parque del River Valley de Edmonton caminando 45 min",
     "⛸️ Prueba patinar en hielo (temporada de invierno en Edmonton)",
     "🎤 Practica 3 min explicando tu paper en inglés y luego en francés",
-    "🕹️ Juega una run de RIFTVOLT y mira qué aprendió NEXUS de ti"
+    "🕹️ Juega una run de RIFTVOLT y mira qué aprendió NEXUS de ti",
+    "🐍 Vence un nivel de PyQuest (eveth0797.github.io/pyquest)",
+    "🧠 Implementa multi-head attention desde cero en PyQuest (Mundo 8)"
   ],
 
   quotes: [
