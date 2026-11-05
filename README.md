@@ -12,7 +12,9 @@
 
 | Área | Qué puedes hacer |
 |---|---|
-| 🏠 **Inicio** | Misiones diarias con XP, barras de atributos por área, *side quests* aleatorias, contador de agua, mapa de actividad (heatmap de 20 semanas), **Pomodoro** que registra XP solo, registro reciente |
+| 📅 **Agenda** | Línea de tiempo del día con bloques y marca de "ahora", plantilla de día ideal, tareas con prioridad y fecha (dan XP), hábitos de 7 días y metas semanales por área |
+| ⏳ **Focus** | Temporizador animado que **se construye mientras te concentras**: 🌲 un bosque que crece del amanecer a la noche, 🪐 un sistema planetario que se forma, o ⚛️ el experimento de la doble rendija, donde la interferencia emerge partícula a partícula. Sigue corriendo aunque recargues |
+| 🏠 **Inicio** | Misiones diarias con XP, barras de atributos por área, *side quests* aleatorias, contador de agua, mapa de actividad (heatmap de 20 semanas), vista previa del Focus, agenda de "ahora y siguiente", registro reciente |
 | ⚡ **Registro rápido** | Botón flotante ⚡ (o tecla **Q**): un clic y queda registrado (gym, cardio, francés, EMT, lectura, agua, meditación...) |
 | 💪 **Gym** | Rutinas Push / Pull / Legs / Full body / Core, series × reps × kg, **detección de PRs**, 1RM estimado, gráfica de progreso por ejercicio, peso corporal |
 | 🥐 **Français** | Flashcards A1-A2 con **repetición espaciada** (vocabulario de ingeniería, gym y comida), pronunciación con voz 🔊, *phrase du jour*, minutos de estudio, ruta A1 → B1, recursos |
@@ -58,3 +60,7 @@ data/             → tus respaldos JSON
 ```
 
 Hecho con ❤️, píxeles y café ☕.
+
+
+## 🤖 Para desarrolladores y LLMs
+Lee **[AGENTS.md](AGENTS.md)**: arquitectura, modelo de datos, API de módulos y roadmap.
