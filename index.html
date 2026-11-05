@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="es" data-theme="arcade">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Life Quest</title>
+  <meta name="description" content="Tracker de vida estilo RPG: gym, francés, EMT, alimentación y más.">
+  <meta name="theme-color" content="#0b0b1e">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚔️</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=M+PLUS+Rounded+1c:wght@400;700;800&family=Orbitron:wght@500;800&family=Silkscreen&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="manifest" href="manifest.json">
+</head>
+<body>
+  <div class="scanlines" aria-hidden="true"></div>
+  <canvas id="stars" aria-hidden="true"></canvas>
+
+  <!-- ===== HUD ===== -->
+  <header class="hud">
+    <div class="hud-left">
+      <button class="avatar" id="avatarBtn" title="Cambiar avatar">🧙</button>
+      <div class="hud-info">
+        <div class="hud-name"><span id="heroName">Héroe</span> <span class="hud-class" id="heroClass">Power Systems Mage</span></div>
+        <div class="hud-lvl">LV <b id="lvlNum">1</b></div>
+        <div class="bar xp"><div class="fill" id="xpFill"></div><span id="xpText">0 / 100 XP</span></div>
+      </div>
+    </div>
+    <div class="hud-right">
+      <div class="stat-pill" title="Racha de días"><span>🔥</span><b id="streakNum">0</b></div>
+      <div class="stat-pill" title="Monedas (XP total / 10)"><span>🪙</span><b id="coinNum">0</b></div>
+      <select id="themeSelect" title="Estilo visual" aria-label="Estilo visual">
+        <option value="arcade">🕹️ Arcade 8-bit</option>
+        <option value="sakura">🌸 Anime Sakura</option>
+        <option value="cyber">🌃 Cyberpunk Neón</option>
+        <option value="gameboy">🟩 Game Boy</option>
+        <option value="rpg">📜 RPG Pergamino</option>
+        <option value="vapor">🌴 Vaporwave</option>
+        <option value="shonen">🔥 Shōnen</option>
+      </select>
+    </div>
+  </header>
+
+  <!-- ===== NAV ===== -->
+  <nav class="tabs" id="tabs">
+    <button data-tab="home" class="active">🏠 <span>Inicio</span></button>
+    <button data-tab="gym">💪 <span>Gym</span></button>
+    <button data-tab="french">🥐 <span>Français</span></button>
+    <button data-tab="emt">⚡ <span>EMT</span></button>
+    <button data-tab="food">🍱 <span>Comida</span></button>
+    <button data-tab="journal">📓 <span>Diario</span></button>
+    <button data-tab="stats">📊 <span>Stats</span></button>
+    <button data-tab="trophies">🏆 <span>Logros</span></button>
+    <button data-tab="ai">🤖 <span>Oráculo IA</span></button>
+    <button data-tab="settings">⚙️ <span>Ajustes</span></button>
+  </nav>
+
+  <main id="main">
+
+    <!-- ========== INICIO ========== -->
+    <section class="tab-panel active" id="tab-home">
+      <div class="banner">
+        <div class="banner-text">
+          <h1 class="glitch" data-text="LIFE QUEST">LIFE QUEST</h1>
+          <p id="todayLabel">—</p>
+          <p class="quote" id="quote">—</p>
+        </div>
+        <div class="sprite" aria-hidden="true">
+          <div class="sprite-char" id="spriteChar">🧙</div>
+          <div class="sprite-shadow"></div>
+        </div>
+      </div>
+
+      <div class="grid g-3">
+        <div class="card">
+          <h2>🎯 Misiones del día</h2>
+          <ul class="quests" id="questList"></ul>
+          <div class="row small"><span id="questProgress">0/0</span><button class="btn ghost" id="editQuestsBtn">✏️ Editar</button></div>
+        </div>
+
+        <div class="card">
+          <h2>🧬 Atributos</h2>
+          <div id="skillBars"></div>
+        </div>
+
+        <div class="card">
+          <h2>🎲 Side quest</h2>
+          <p class="side-quest" id="sideQuest">—</p>
+          <div class="row"><button class="btn" id="rollSideBtn">🎲 Otra</button><button class="btn ok" id="doneSideBtn">✔ Hecha (+20 XP)</button></div>
+          <hr>
+          <h3>💧 Agua hoy</h3>
+          <div class="water" id="waterView"></div>
+          <div class="row"><button class="btn" data-water="250">+250 ml</button><button class="btn" data-water="500">+500 ml</button><button class="btn ghost" data-water="-250">−</button></div>
+        </div>
+      </div>
+
+      <div class="grid g-2">
+        <div class="card">
+          <h2>🗓️ Mapa de actividad (últimas 20 semanas)</h2>
+          <div class="heatmap" id="heatmap"></div>
+          <div class="legend small">Menos <i class="l0"></i><i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l4"></i> Más</div>
+        </div>
+        <div class="card">
+          <h2>⏱️ Pomodoro</h2>
+          <div class="pomo">
+            <div class="pomo-time" id="pomoTime">25:00</div>
+            <select id="pomoSkill" aria-label="Habilidad del pomodoro"></select>
+            <div class="row center">
+              <button class="btn" id="pomoStart">▶ Start</button>
+              <button class="btn ghost" id="pomoReset">↺</button>
+              <button class="btn ghost" data-pomo="25">25</button>
+              <button class="btn ghost" data-pomo="50">50</button>
+              <button class="btn ghost" data-pomo="5">5</button>
+            </div>
+            <p class="small">Al terminar se registra automáticamente el tiempo y el XP.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>📜 Registro reciente</h2>
+        <ul class="log" id="recentLog"></ul>
+      </div>
+    </section>
+
+    <!-- ========== GYM ========== -->
+    <section class="tab-panel" id="tab-gym">
+      <div class="grid g-2">
+        <div class="card">
+          <h2>🏋️ Nuevo entrenamiento</h2>
+          <label>Rutina
+            <select id="routineSelect"></select>
+          </label>
+          <div id="exerciseRows"></div>
+          <div class="row">
+            <button class="btn ghost" id="addExerciseBtn">+ Ejercicio</button>
+            <label class="inline">Duración (min) <input type="number" id="workoutMin" value="60" min="0"></label>
+          </div>
+          <label>Notas <input type="text" id="workoutNotes" placeholder="Sensaciones, RPE, energía…"></label>
+          <button class="btn big ok" id="saveWorkoutBtn">💾 Guardar entrenamiento</button>
+        </div>
+        <div class="card">
+          <h2>🏅 Récords personales (PR)</h2>
+          <table class="table" id="prTable"></table>
+          <h3>📈 Progreso de un ejercicio</h3>
+          <select id="prChartSelect"></select>
+          <canvas id="prChart" height="180"></canvas>
+        </div>
+      </div>
+      <div class="card">
+        <h2>📚 Historial</h2>
+        <div id="workoutHistory"></div>
+      </div>
+      <div class="card">
+        <h2>⚖️ Peso corporal</h2>
+        <div class="row"><input type="number" step="0.1" id="bodyWeight" placeholder="kg"><button class="btn" id="saveWeightBtn">Registrar</button></div>
+        <canvas id="weightChart" height="140"></canvas>
+      </div>
+    </section>
+
+    <!-- ========== FRANÇAIS ========== -->
+    <section class="tab-panel" id="tab-french">
+      <div class="grid g-2">
+        <div class="card">
+          <h2>🃏 Flashcards</h2>
+          <div class="flash" id="flash">
+            <div class="flash-inner">
+              <div class="flash-front" id="flashFront">—</div>
+              <div class="flash-back" id="flashBack">—</div>
+            </div>
+          </div>
+          <div class="row center">
+            <button class="btn" id="flipBtn">🔄 Voltear</button>
+            <button class="btn bad" data-grade="0">😵 Otra vez</button>
+            <button class="btn" data-grade="1">🤔 Difícil</button>
+            <button class="btn ok" data-grade="2">😎 Fácil</button>
+            <button class="btn ghost" id="speakBtn" title="Escuchar pronunciación">🔊</button>
+          </div>
+          <p class="small center" id="flashStats"></p>
+          <details>
+            <summary>➕ Añadir tarjeta propia</summary>
+            <div class="row"><input id="newFr" placeholder="français"><input id="newEs" placeholder="español"><button class="btn" id="addCardBtn">Añadir</button></div>
+          </details>
+        </div>
+        <div class="card">
+          <h2>💬 Phrase du jour</h2>
+          <p class="phrase" id="phrase">—</p>
+          <button class="btn ghost" id="speakPhraseBtn">🔊 Écouter</button>
+          <hr>
+          <h2>⏱️ Tiempo de francés</h2>
+          <div class="big-num"><span id="frMinutes">0</span> min</div>
+          <div class="row">
+            <button class="btn" data-fr="15">+15 min</button><button class="btn" data-fr="30">+30 min</button><button class="btn" data-fr="60">+1 h</button>
+          </div>
+          <label>Actividad
+            <select id="frActivity">
+              <option>Duolingo / app</option><option>Clase / tutor</option><option>Podcast</option><option>Serie / anime</option>
+              <option>Lectura</option><option>Escritura</option><option>Conversación</option><option>Gramática</option>
+            </select>
+          </label>
+          <hr>
+          <h3>🔗 Recursos</h3>
+          <ul class="links">
+            <li><a href="https://www.tv5monde.com/langue-francaise" target="_blank" rel="noopener">TV5Monde Apprendre</a></li>
+            <li><a href="https://www.youtube.com/@innerfrench" target="_blank" rel="noopener">InnerFrench</a></li>
+            <li><a href="https://savoirs.rfi.fr/fr/apprendre-enseigner" target="_blank" rel="noopener">RFI Savoirs – Journal en français facile</a></li>
+            <li><a href="https://conjugueur.reverso.net/conjugaison-francais.html" target="_blank" rel="noopener">Reverso Conjugaison</a></li>
+            <li><a href="https://www.wordreference.com/fres/" target="_blank" rel="noopener">WordReference FR-ES</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="card">
+        <h2>🗺️ Ruta A1 → B1</h2>
+        <div class="roadmap" id="frRoad"></div>
+      </div>
+    </section>
+
+    <!-- ========== EMT ========== -->
+    <section class="tab-panel" id="tab-emt">
+      <div class="grid g-2">
+        <div class="card">
+          <h2>⚡ Skill tree EMT · Data Centers</h2>
+          <p class="small">Marca cada tema al dominarlo. Cada nodo da +40 XP.</p>
+          <div class="progress-ring-wrap"><div class="ring" id="emtRing"><span id="emtPct">0%</span></div></div>
+        </div>
+        <div class="card">
+          <h2>📝 Sesión de estudio / proyecto</h2>
+          <label>Tema <input id="emtTopic" placeholder="Ej. inrush 34.5 kV, modelo BESS GFM…"></label>
+          <div class="row">
+            <label class="inline">Minutos <input type="number" id="emtMin" value="30" min="0"></label>
+            <label class="inline">Tipo
+              <select id="emtType"><option>Estudio</option><option>Proyecto cliente</option><option>Simulación</option><option>Paper / norma</option><option>Scripting</option></select>
+            </label>
+          </div>
+          <label>Aprendizaje clave <textarea id="emtNote" rows="3" placeholder="¿Qué aprendiste? ¿Qué falta?"></textarea></label>
+          <button class="btn big ok" id="saveEmtBtn">💾 Guardar sesión</button>
+          <p class="small">Total: <b id="emtHours">0</b> h</p>
+        </div>
+      </div>
+      <div class="card">
+        <h2>🌳 Ruta</h2>
+        <div class="roadmap" id="emtRoad"></div>
+      </div>
+      <div class="card">
+        <h2>📒 Bitácora técnica</h2>
+        <div id="emtLog"></div>
+      </div>
+      <div class="card">
+        <h2>📚 Biblioteca</h2>
+        <ul class="links">
+          <li>Greenwood — <i>Electrical Transients in Power Systems</i></li>
+          <li>Martinez-Velasco — <i>Power System Transients: Parameter Determination</i></li>
+          <li>Watson & Arrillaga — <i>Power Systems Electromagnetic Transients Simulation</i></li>
+          <li>CIGRE TB 881 / TB 727 — modelado EMT de IBR</li>
+          <li>IEEE Std 2800-2022, IEEE 519-2022, IEEE C37.011 (TRV)</li>
+          <li><a href="https://www.pscad.com/knowledge-base" target="_blank" rel="noopener">PSCAD Knowledge Base</a></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ========== COMIDA ========== -->
+    <section class="tab-panel" id="tab-food">
+      <div class="grid g-2">
+        <div class="card">
+          <h2>🍽️ Registrar comida</h2>
+          <div class="row">
+            <select id="mealType"><option>Desayuno</option><option>Almuerzo</option><option>Cena</option><option>Snack</option><option>Pre/Post-entreno</option></select>
+            <select id="mealQuality"><option value="3">🟢 Muy sana</option><option value="2">🟡 Normal</option><option value="1">🔴 Cheat</option></select>
+          </div>
+          <label>¿Qué comiste? <input id="mealText" placeholder="Pollo, arroz, ensalada…"></label>
+          <div class="row">
+            <label class="inline">Proteína (g) <input type="number" id="mealProt" value="0" min="0"></label>
+            <label class="inline">kcal <input type="number" id="mealKcal" value="0" min="0"></label>
+          </div>
+          <button class="btn big ok" id="saveMealBtn">💾 Guardar</button>
+        </div>
+        <div class="card">
+          <h2>🎯 Hoy</h2>
+          <div class="meters">
+            <div><span>Proteína</span><div class="bar"><div class="fill" id="protFill"></div><span id="protText">0 g</span></div></div>
+            <div><span>Calorías</span><div class="bar"><div class="fill" id="kcalFill"></div><span id="kcalText">0 kcal</span></div></div>
+            <div><span>Agua</span><div class="bar"><div class="fill" id="waterFill"></div><span id="waterText">0 ml</span></div></div>
+          </div>
+          <ul class="log" id="mealsToday"></ul>
+          <hr>
+          <h3>💡 Ideas altas en proteína</h3>
+          <ul class="small tips">
+            <li>Yogur griego + avena + frutos rojos (~30 g)</li>
+            <li>Omelette 3 huevos + claras + espinaca (~28 g)</li>
+            <li>Bowl de pollo, arroz, frijoles y aguacate (~45 g)</li>
+            <li>Atún + pan integral + vegetales (~35 g)</li>
+            <li>Batido: leche, whey, plátano, crema de cacahuate (~40 g)</li>
+            <li>Salmón al horno + papa + brócoli (~35 g)</li>
+          </ul>
+        </div>
+      </div>
+      <div class="card">
+        <h2>📈 Proteína últimos 14 días</h2>
+        <canvas id="protChart" height="140"></canvas>
+      </div>
+    </section>
+
+    <!-- ========== DIARIO ========== -->
+    <section class="tab-panel" id="tab-journal">
+      <div class="grid g-2">
+        <div class="card">
+          <h2>📓 Entrada de hoy</h2>
+          <div class="mood" id="moodPick">
+            <button data-mood="1">😫</button><button data-mood="2">😕</button><button data-mood="3">😐</button><button data-mood="4">🙂</button><button data-mood="5">🤩</button>
+          </div>
+          <div class="row">
+            <label class="inline">Sueño (h) <input type="number" step="0.5" id="sleepH" value="7"></label>
+            <label class="inline">Energía 1-5 <input type="number" id="energy" min="1" max="5" value="3"></label>
+          </div>
+          <label>3 cosas buenas de hoy <textarea id="gratitude" rows="3"></textarea></label>
+          <label>Notas / reflexión <textarea id="journalText" rows="5"></textarea></label>
+          <label>Prioridad #1 de mañana <input id="tomorrow"></label>
+          <button class="btn big ok" id="saveJournalBtn">💾 Guardar diario</button>
+        </div>
+        <div class="card">
+          <h2>📚 Entradas anteriores</h2>
+          <div id="journalList"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== STATS ========== -->
+    <section class="tab-panel" id="tab-stats">
+      <div class="grid g-4" id="statTiles"></div>
+      <div class="grid g-2">
+        <div class="card"><h2>🕸️ Radar de atributos</h2><canvas id="radarChart" height="260"></canvas></div>
+        <div class="card"><h2>⏳ Minutos por área (30 días)</h2><canvas id="minutesChart" height="260"></canvas></div>
+      </div>
+      <div class="card"><h2>📈 XP diario (30 días)</h2><canvas id="xpChart" height="140"></canvas></div>
+      <div class="card"><h2>😊 Ánimo y sueño</h2><canvas id="moodChart" height="140"></canvas></div>
+    </section>
+
+    <!-- ========== LOGROS ========== -->
+    <section class="tab-panel" id="tab-trophies">
+      <div class="card">
+        <h2>🏆 Logros</h2>
+        <div class="trophies" id="trophyGrid"></div>
+      </div>
+      <div class="card">
+        <h2>🎁 Tienda de recompensas</h2>
+        <p class="small">Gasta tus 🪙 en recompensas que tú definas.</p>
+        <div id="shop"></div>
+        <div class="row"><input id="rewardName" placeholder="Recompensa (ej. noche de anime)"><input type="number" id="rewardCost" placeholder="🪙" style="max-width:90px"><button class="btn" id="addRewardBtn">Añadir</button></div>
+      </div>
+    </section>
+
+    <!-- ========== IA ========== -->
+    <section class="tab-panel" id="tab-ai">
+      <div class="card">
+        <h2>🤖 Oráculo IA</h2>
+        <p>Escribe tu pregunta. Se arma un <b>resumen de tu progreso</b> como contexto, se copia al portapapeles y se abre <b>claude.ai</b> con todo listo para enviar.</p>
+        <div class="chips" id="promptChips"></div>
+        <textarea id="aiQuestion" rows="4" placeholder="¿Qué quieres preguntarle al oráculo?"></textarea>
+        <label class="check"><input type="checkbox" id="aiIncludeCtx" checked> Incluir resumen de mis registros</label>
+        <div class="row">
+          <button class="btn big ok" id="askClaudeBtn">🔮 Preguntar en Claude</button>
+          <button class="btn" id="copyCtxBtn">📋 Solo copiar</button>
+        </div>
+        <details>
+          <summary>👀 Ver el contexto que se enviará</summary>
+          <pre id="ctxPreview" class="pre"></pre>
+        </details>
+      </div>
+    </section>
+
+    <!-- ========== AJUSTES ========== -->
+    <section class="tab-panel" id="tab-settings">
+      <div class="grid g-2">
+        <div class="card">
+          <h2>👤 Personaje</h2>
+          <label>Nombre <input id="setName"></label>
+          <label>Clase <input id="setClass"></label>
+          <label>Avatar
+            <div class="avatars" id="avatarPick"></div>
+          </label>
+          <label>Meta de proteína (g/día) <input type="number" id="setProt"></label>
+          <label>Meta de calorías (kcal/día) <input type="number" id="setKcal"></label>
+          <label>Meta de agua (ml/día) <input type="number" id="setWater"></label>
+          <label class="check"><input type="checkbox" id="setSound"> Sonidos 8-bit</label>
+          <label class="check"><input type="checkbox" id="setFx"> Efectos (estrellas, scanlines)</label>
+          <button class="btn ok" id="saveSettingsBtn">💾 Guardar</button>
+        </div>
+        <div class="card">
+          <h2>💾 Save files</h2>
+          <p class="small">Tus datos viven en este navegador. Exporta un respaldo y súbelo a <code>data/</code> en GitHub para tenerlo versionado, o impórtalo en otro dispositivo.</p>
+          <div class="row">
+            <button class="btn" id="exportBtn">⬇️ Exportar JSON</button>
+            <label class="btn ghost file">⬆️ Importar JSON<input type="file" id="importFile" accept="application/json" hidden></label>
+          </div>
+          <div class="row"><button class="btn bad" id="resetBtn">🗑️ Borrar todo</button></div>
+          <hr>
+          <h3>✏️ Misiones diarias</h3>
+          <div id="questEditor"></div>
+          <div class="row"><input id="newQuestText" placeholder="Nueva misión"><select id="newQuestSkill"></select><input type="number" id="newQuestXp" value="15" style="max-width:70px"><button class="btn" id="addQuestBtn">+</button></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== FAB + QUICK LOG ===== -->
+  <button class="fab" id="fab" title="Registro rápido (tecla Q)">⚡</button>
+  <dialog id="quickDialog" class="dialog">
+    <form method="dialog" class="dialog-body">
+      <h2>⚡ Registro rápido</h2>
+      <div class="quick-grid" id="quickGrid"></div>
+      <hr>
+      <h3>Personalizado</h3>
+      <div class="row">
+        <select id="customSkill"></select>
+        <input type="number" id="customMin" placeholder="min" style="max-width:80px">
+        <input id="customNote" placeholder="nota">
+        <button type="button" class="btn ok" id="customLogBtn">+ Log</button>
+      </div>
+      <div class="row end"><button class="btn ghost" value="close">Cerrar</button></div>
+    </form>
+  </dialog>
+
+  <div id="toasts" aria-live="polite"></div>
+  <div id="levelUp" class="levelup" hidden><div>LEVEL UP!<small id="levelUpText"></small></div></div>
+
+  <footer class="foot small">LIFE QUEST · tus datos se guardan localmente · <a href="https://github.com/" id="repoLink" target="_blank" rel="noopener">GitHub</a> · tecla <kbd>Q</kbd> = registro rápido</footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
