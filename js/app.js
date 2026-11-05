@@ -188,7 +188,7 @@
     // water
     const ml = S.water[today()] || 0, goal = S.profile.goals.water, cups = Math.ceil(goal / 250);
     $("#waterView").innerHTML = Array.from({ length: cups }, (_, i) => `<span class="${i < ml / 250 ? "on" : ""}">💧</span>`).join("") + `<div class="small" style="width:100%">${ml} / ${goal} ml</div>`;
-    renderHeatmap(); renderRecent();
+    renderHeatmap(); renderRecent(); renderRift();
   }
   $("#questList").addEventListener("click", e => {
     const li = e.target.closest("li[data-q]"); if (!li) return;
@@ -212,6 +212,16 @@
     if (v > 0) addLog({ skill: "food", xp: Math.round(v / 125), note: `Agua +${v} ml`, type: "water" }, e); else renderAll();
   });
 
+  function renderRift() {
+    try {
+      const m = JSON.parse(localStorage.getItem("riftvolt.meta.v1") || "null"), n = JSON.parse(localStorage.getItem("riftvolt.nexus.v1") || "null");
+      if (!m) return;
+      const done = (S.questDone[today()] || []).length, tot = S.quests.length;
+      const bonus = done >= tot ? "🌟 Bonus activo: +1 ♥ y +1 re-tirada" : done >= tot / 2 ? "✨ Bonus activo: +1 re-tirada" : `Completa ${Math.ceil(tot / 2) - done} misión(es) más para activar bonus`;
+      $("#riftStats").innerHTML = `Runs: <b>${m.runs}</b> · Eliminaciones: <b>${m.kills}</b> · Villanos vencidos: <b>${Object.keys(m.bosses || {}).length}</b> · Récord: <b>${m.highScore}</b><br>
+        NEXUS: rating <b>${n ? Math.round(n.skill) : "—"}</b> · piso de entropía <b>${n ? Math.round(n.floor) : "—"}</b><br>${bonus}`;
+    } catch {}
+  }
   function renderHeatmap() {
     const weeks = 20, end = new Date(), start = addDays(end, -(weeks * 7 - 1) - end.getDay());
     let html = ""; const t = today();
